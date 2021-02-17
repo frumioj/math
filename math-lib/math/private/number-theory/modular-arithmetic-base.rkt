@@ -4,6 +4,7 @@
          current-modulus
          modular-inverse
          modular-expt
+         pow
          inline-mod+
          inline-mod*
          inline-mod-
@@ -73,6 +74,26 @@
   (define (modular-expt a b n)
     (cond [(n . <= . 0)  (raise-argument-error 'modular-expt "Positive-Integer" 2 a b n)]
           [else  (modular-expt* n a b)]))
+
+  (: pow (Integer Integer Integer -> Natural))
+  (define (pow base exponent modulus)
+    (cond [(<= modulus 0)
+           (raise-argument-error 'modular-expt "Natural" 1 exponent modulus base)]
+          [(= modulus 0) (if (= base 1) 0 1)]
+          [(= modulus 1) 0] 
+          [else
+           (pow-iter 1 (modulo base modulus) exponent modulus)]))
+  
+  (: pow-iter (Nonnegative-Integer Integer Integer Positive-Integer -> Natural))
+  (define (pow-iter result base exponent modulus)
+    (cond [(< base 0) (raise-argument-error 'pow-iter "Natural" 1 result base exponent modulus)]
+          [(<= exponent 0) result]
+          [else
+           (cond [(even? exponent)
+                  (pow-iter result (modulo (* base base) modulus) (arithmetic-shift exponent -1) modulus)]
+                 [else
+                  (pow-iter (modulo (* result base) modulus) (modulo (* base base) modulus) (arithmetic-shift exponent -1) modulus)])]))
+
   )
 
 (module untyped-defs racket/base
