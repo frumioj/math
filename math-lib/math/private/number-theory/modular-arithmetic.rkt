@@ -17,7 +17,8 @@
          mod<
          mod<=
          mod>
-         mod>=)
+         mod>=
+         pow)
 
 (module typed-defs typed/racket/base
   (require racket/performance-hint
